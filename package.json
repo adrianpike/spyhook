@@ -1,0 +1,17 @@
+{
+    "name": "spyhook",
+    "version": "0.0.1",
+    "author": "adrianpike <adrian@adrianpike.com>",
+    "description": "sample",
+    "license": "MIT",
+    "engine": {
+        "node": ">=0.4"
+    },
+    "dependencies": {
+        "mongodb":  ">=0.1",
+        "lactate": ">=0.1",
+        "connect": ">=0.1",
+        "express": ">=0.1",
+        "debug": "*"
+    }
+}

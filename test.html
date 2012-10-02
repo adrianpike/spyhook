@@ -1,0 +1,19 @@
+<html>
+<head>
+    <script type="text/javascript" src="/spyhook.js"></script>
+    <script type="text/javascript">
+      Spyhook.globals({keys: { user_id: 'a fake user'} });
+    </script>
+</head>
+<body>
+<h1>Spyhook Test</h1>
+
+<ul>
+  <li><a href="#" onclick="Spyhook.record('clicked-on-something');">Record a Spyhook event.</a></li>
+  <li><a href="http://google.com/">Leave this page.</a></li>
+</ul>
+
+<img src="http://s3.amazonaws.com/rctn.me/4f6b8cb0-81ae-012f-ad5d-12313d1905c5/ca75a2e4.gif" alt="Hover over me!" onmouseover="Spyhook.record('hovered', {data: {src: this.src }})" />
+
+</body>
+</html>
