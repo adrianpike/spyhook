@@ -26,16 +26,16 @@ Enter Spyhook. Let's show how you would record some events on the client.
 
 We can also do it on the server-side! (In this case, in Ruby)
 
-  require 'net/http'
-  require 'json'
+    require 'net/http'
+    require 'json'
 
-  req = Net::HTTP::Post.new('/spy', initheader = {'Content-Type' =>'application/json'})
-  req.body = [{
-    event: 'foobar'
-  },{
-    event: 'bazzle'
-  }].to_json
-  Net::HTTP.new('spyhook.example.local', 80).start {|http| http.request(req) }
+    req = Net::HTTP::Post.new('/spy', initheader = {'Content-Type' =>'application/json'})
+    req.body = [{
+      event: 'foobar'
+    },{
+      event: 'bazzle'
+    }].to_json
+    Net::HTTP.new('spyhook.example.local', 80).start {|http| http.request(req) }
 
 You get the idea. All that jazz on the clients? Happens asynchronously. Requests get batched up too. Server-side? It's a simple node.js daemon that proxies through to your choice of backend. Initially, we're using it to pipe to MongoDB.
 
@@ -44,8 +44,8 @@ Quickstart
 
 You'll need a MongoDB server running - you can specify the host and port with the environment variables MONGO_NODE_DRIVER_HOST and MONGO_NODE_DRIVER_PORT. Defaults are localhost:27017.
 
-  $ npm install
-  $ node server.js
+    $ npm install
+    $ node server.js
 
 Point a browser to http://localhost:1337/tail, and then another browser to http://localhost:1337/test. You'll see events come through on the tail!
 
@@ -54,18 +54,18 @@ Schema
 
 Spyhook thinks in documents. Events are wrapped up in a fairly simple schema, which is then indexed appropriately at the server level. At this time, the schema will likely change - I'd recommend using the JS library until we hit 1.0.
 
-  {
-    event: 'Event Name',
-    keys: {
-      user_id: 'An example user id or session',
-      color: 'Purple',
-      ts: 'The timestamp of when the event happened on the client side.'
-    },
-    data: {
-      extra_info: 'There might be some extra information here about the event.',
-      even_more: 'Keys in the data section won\'t be indexed for querying.'
+    {
+      event: 'Event Name',
+      keys: {
+        user_id: 'An example user id or session',
+        color: 'Purple',
+        ts: 'The timestamp of when the event happened on the client side.'
+      },
+      data: {
+        extra_info: 'There might be some extra information here about the event.',
+        even_more: 'Keys in the data section won\'t be indexed for querying.'
+      }
     }
-  }
 
 Example Queries
 ---------------
