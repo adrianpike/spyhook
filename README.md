@@ -12,7 +12,7 @@ Enter Spyhook. Let's show how you would record some events on the client.
 
     <script type="text/javascript" src="https://spyhook.example.local/spyhook.js"></script>
     <script type="text/javascript">
-      Spyhook.globals({keys: { user_id: 'SESSION_KEY'} }); // These will be merged into every Spyhook request.
+      Spyhook.globals({keys: { user_id: 'SESSION_KEY' } }); // These will be merged into every Spyhook request.
     </script>
 
     <script type="text/javascript">
@@ -67,10 +67,15 @@ Spyhook thinks in documents. Events are wrapped up in a fairly simple schema, wh
       }
     }
 
+Performance note: Anything you put into the "keys" sections will add an index. Be careful having too many keys here.
+
 Example Queries
 ---------------
 
-Coming soon. :)
+These are some example Mongo queries that you might use against a Spyhook database.
+
+Get all the page visits a given user has made:
+    db.spyhook.events.find({'keys.user_id': 'an example user', 'event':'visit'})
 
 FAQ's
 -----
