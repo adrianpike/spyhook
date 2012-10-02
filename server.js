@@ -18,8 +18,18 @@ app.get('/spyhook.js', function(req, res) {
   lactate.serve('lib/client.js', req, res);
 });
 
+app.options('/spy', function(req, res) {
+  res.writeHead(200, {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type'});
+  res.end('{success: true}\n');
+});
+
 app.post('/spy', function(req, res) {
-  res.writeHead(200, {'Content-Type': 'application/json'});
+  res.writeHead(200, {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type'});
+
+  if (req.headers['content-type'] == 'application/x-www-form-urlencoded') {
+    req.body = JSON.parse(req.body.body);
+  }
+
   for (var idx in req.body) {
     var event = req.body[idx];
     Spyhook.record(event.event, event.opts);
@@ -36,7 +46,7 @@ app.post('/spy', function(req, res) {
 });
 
 app.get('/tail', function(req, res) {
-  lactate.serve('tail.html', req, res);
+  lactate.serve('static/tail.html', req, res);
 });
 
 app.get('/events.json', function(req, res) {
@@ -53,7 +63,7 @@ app.get('/events.json', function(req, res) {
 });
 
 app.get('/test', function(req, res) {
-  lactate.serve('test.html', req, res);
+  lactate.serve('static/test.html', req, res);
 });
 
 console.log('Server running at http://127.0.0.1:1337/');
