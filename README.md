@@ -90,6 +90,11 @@ Unfortunately, yes. I don't have an easy solution to this, since we can't trust 
 Todo
 ----
 
+ * SSL
+ * Reporting interface:
+  * Tail live events
+  * Fetch events by key
+  * Fetch events by event type
  * Minify up the client lib automagically.
  * Support running events through a queue.
  * Use an offset for server time vs. client time.

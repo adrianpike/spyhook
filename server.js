@@ -1,18 +1,35 @@
+var CONFIG = require('config');
+
+if (CONFIG.ssl) {
+  var path     = require("path");
+  var fs       = require("fs");
+  var http     = require('https');
+
+  var credentials;
+  var keysPath = __dirname + "/keys";
+  if (path.existsSync(keysPath + "/privatekey.pem") && path.existsSync(keysPath + "/certificate.pem")) {
+    var privateKey = fs.readFileSync(keysPath + "/privatekey.pem", "utf8");
+    var certificate = fs.readFileSync(keysPath + "/certificate.pem", "utf8");
+    var ca = fs.readFileSync(keysPath + "/ca.pem", "utf8");
+
+    credentials = {key: privateKey, cert: certificate, ca: ca};
+  }
+}
+
 var express = require("express");
+var Lactate = require('lactate');
+var Spyhook = require('./lib/server.js').spyhook({});
+
+var lactate = Lactate.Lactate();
+lactate.set({
+  root:process.cwd(),
+  expires:'1 day'
+});
+
 var app = express();
 app.use(express.bodyParser());
 
-var Lactate = require('lactate');
-var lactate = Lactate.Lactate();
-
-var Spyhook = require('./lib/server.js').spyhook();
-
-var tailers = [];
-
-lactate.set({
-  root:process.cwd(),
-  expires:'5 minutes'
-});
+auth = express.basicAuth(CONFIG.username, CONFIG.password);
 
 app.get('/spyhook.js', function(req, res) {
   lactate.serve('lib/client.js', req, res);
@@ -36,20 +53,42 @@ app.post('/spy', function(req, res) {
   }
   res.end('{success: true}\n');
 
-  for (var tailer in tailers) { // TODO: make this not suck
-    var id = (new Date()).toLocaleTimeString();
-    tailers[tailer].write('id: ' + id + '\n');
-    tailers[tailer].write('event: event\n');
-    tailers[tailer].write('data: ' + JSON.stringify(req.body) + '\n\n');
-  }
-
 });
 
-app.get('/tail', function(req, res) {
-  lactate.serve('static/tail.html', req, res);
+app.get('/test', function(req, res) {
+  lactate.serve('static/test.html', req, res);
 });
 
-app.get('/events.json', function(req, res) {
+
+app.get('/', function(req, res) {
+  lactate.serve('static/index.html', req, res);
+});
+
+app.get('/reports', auth, function(req, res) {
+  lactate.serve('static/reports.html', req, res);
+});
+
+app.get('/events', auth, function(req, res) {
+  Spyhook.events(function(result) {
+    res.send(result);
+  });
+});
+
+app.get('/events/:event', auth, function(req, res) {
+  Spyhook.event(req.params['event'], function(item) {
+    res.send(item);
+  });
+});
+
+app.get('/keys/', auth, function(req, res) {
+  // TODO
+});
+
+app.get('/keys/:key/:value', auth, function(req, res) {
+  // TODO
+});
+
+app.get('/event-stream.json', auth, function(req, res) {
   res.header('Content-Type', 'text/event-stream');
   res.header('Cache-Control', 'no-cache');
   res.header('Connection', 'keep-alive');
@@ -62,11 +101,11 @@ app.get('/events.json', function(req, res) {
 
 });
 
-app.get('/test', function(req, res) {
-  lactate.serve('static/test.html', req, res);
-});
+console.log('Spyhook receiver running at http://127.0.0.1:' + CONFIG.port + '/');
 
-console.log('Server running at http://127.0.0.1:1337/');
-console.log(Spyhook);
-
-app.listen(1337);
+if (credentials) {
+  https = http.createServer(credentials, app);
+  https.listen(CONFIG.port);
+} else {
+  app.listen(CONFIG.port);
+}

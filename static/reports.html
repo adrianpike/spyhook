@@ -1,4 +1,3 @@
-<pre id="log"></pre>
 
 <script>
   var source = new EventSource('/events.json');
@@ -7,3 +6,5 @@
     log.innerText += '\n' + event.data;
   }, false);
 </script>
+
+<pre id="log"></pre>

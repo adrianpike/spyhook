@@ -12,6 +12,7 @@
         "lactate": ">=0.1",
         "connect": ">=0.1",
         "express": ">=0.1",
+        "config": ">=0.1",
         "debug": "*"
     }
 }
